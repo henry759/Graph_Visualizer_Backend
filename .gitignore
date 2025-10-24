@@ -1,31 +1,49 @@
-# Python bytecode
+# Python cache ve derleme dosyaları
 __pycache__/
 *.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.manifest
+*.spec
 
-# Virtual environments
-venv/
-env/
-
-# Environment variables
+# Ortam dosyaları
 .env
-.env.*
+*.env
+*.env.*
 
-# SQLite or other local DBs
-*.sqlite3
+# SQLite veritabanı dosyaları
 *.db
+*.sqlite3
 
-# Logs and temp files
+# Log ve geçici dosyalar
 *.log
 *.tmp
 *.bak
+*.swp
 
-# FFmpeg outputs (optional)
-*.jpg
-*.png
-*.mp4
-*.webp
+# Test ve coverage
+.coverage
+.coverage.*
+htmlcov/
+.cache/
+.mypy_cache/
+.pytest_cache/
 
-# IDE configs
+# Sanal ortamlar
+venv/
+env/
+.venv/
+
+# IDE/editor dosyaları
 .vscode/
 .idea/
+*.code-workspace
+*.sublime-project
+*.sublime-workspace
 
+# OS sistem dosyaları
+.DS_Store
+Thumbs.db
