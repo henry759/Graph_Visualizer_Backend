@@ -1,5 +1,5 @@
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 import shutil
 import uuid
 import tempfile
@@ -15,7 +15,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000",
-    "https://graphize.netlify.app"
+    "https://graphize.netlify.app",
 ]
 
 app.add_middleware(
