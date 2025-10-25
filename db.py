@@ -11,7 +11,8 @@ def init_db():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS images (
     id TEXT PRIMARY KEY,
-    image_url TEXT NOT NULL
+    image_url TEXT NOT NULL,
+    user_id TEXT
     )
     """)
     conn.commit()

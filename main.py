@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 import shutil
 import uuid
@@ -25,32 +25,45 @@ app.add_middleware(
 class Image(BaseModel):
     id: Optional[str] = None
     image_url: str
+    user_id: str
+
+class ImageCreate(BaseModel):
+    image_url: str
+    user_id: str
 
 @app.get("/")
 async def root():
     return {"message": "Successfully Created!"}
 
 @app.get("/images", response_model=List[Image])
-async def get_saves():
+async def get_saves(user_id: str):
     conn = get_db()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM images")
+    cur.execute("SELECT * FROM images WHERE user_id = ?", (user_id,))
     rows = cur.fetchall()
-    return [{"id": row["id"], "image_url": row["image_url"]} for row in rows]
+    conn.close()
+    return [{"id": row["id"], "image_url": row["image_url"], "user_id": row["user_id"]} for row in rows]
 
 @app.post("/images", response_model=Image)
-async def create_save(image: Image):
+async def create_save(data: ImageCreate):
     conn = get_db()
     cur = conn.cursor()
     image_id = uuid.uuid4().hex
-    cur.execute('INSERT INTO images (id, image_url) VALUES (?, ?)', (image_id, image.image_url))
+    cur.execute('INSERT INTO images (id, image_url, user_id) VALUES (?, ?, ?)', (image_id, data.image_url, data.user_id))
     conn.commit()
-    return { "id": image_id, "image_url": image.image_url }
+    conn.close()
+    return { "id": image_id, "image_url": data.image_url }
 
 @app.delete("/images/{image_id}")
-async def delete_save(image_id: str):
+async def delete_save(image_id: str, user_id: str):
     conn = get_db()
     cur = conn.cursor()
+    cur.execute("SELECT * FROM images WHERE id = ? AND user_id = ?", (image_id, user_id))
+    row = cur.fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=403, detail="Forbidden")
     cur.execute("DELETE FROM images WHERE id = ?", (image_id,))
     conn.commit()
-    return {"Message": "Deleted"}
+    conn.close()
+    return {"message": "Deleted"}
