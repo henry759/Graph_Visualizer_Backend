@@ -62,7 +62,7 @@ async def create_save(data: Image):
     cur.execute('INSERT INTO images (id, image_url, user_id) VALUES (?, ?, ?)', (image_id, data.image_url, data.user_id))
     conn.commit()
     conn.close()
-    return { "id": image_id, "image_url": data.image_url }
+    return { "id": image_id, "image_url": data.image_url, "user_id": data.user_id }
 
 @app.delete("/images/{image_id}")
 async def delete_save(image_id: str, user_id: Optional[str] = Query(None)):
