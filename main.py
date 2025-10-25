@@ -12,15 +12,21 @@ import sqlite3
 from db import get_db, init_db
 
 app = FastAPI()
-init_db()
+
+origins = [
+    "http://localhost:3000",
+    "https://graphize.netlify.app"
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Geliştirme için tüm kaynaklara izin
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+init_db()
 
 class Image(BaseModel):
     id: Optional[str] = None
