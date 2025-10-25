@@ -33,6 +33,14 @@ class Image(BaseModel):
     image_url: str
     user_id: str
 
+@app.options("/images")
+async def options_images():
+    return JSONResponse(content={"message": "CORS is ready to go!"})
+
+@app.options("/images/{image_id}")
+async def options_image_id(image_id: str):
+    return JSONResponse(content={"message": "CORS is ready to go!"})
+
 @app.get("/")
 async def root():
     return {"message": "Successfully Created!"}
