@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse
 import shutil
 import uuid
@@ -33,10 +33,6 @@ class Image(BaseModel):
     image_url: str
     user_id: str
 
-class ImageCreate(BaseModel):
-    image_url: str
-    user_id: str
-
 @app.get("/")
 async def root():
     return {"message": "Successfully Created!"}
@@ -51,7 +47,7 @@ async def get_saves(user_id: str):
     return [{"id": row["id"], "image_url": row["image_url"], "user_id": row["user_id"]} for row in rows]
 
 @app.post("/images", response_model=Image)
-async def create_save(data: ImageCreate):
+async def create_save(data: Image):
     conn = get_db()
     cur = conn.cursor()
     image_id = uuid.uuid4().hex
@@ -61,7 +57,9 @@ async def create_save(data: ImageCreate):
     return { "id": image_id, "image_url": data.image_url }
 
 @app.delete("/images/{image_id}")
-async def delete_save(image_id: str, user_id: str):
+async def delete_save(image_id: str, user_id: Optional[str] = Query(None)):
+    if not user_id:
+        raise HTTPException(status_code=400, detail="Missing user_id")
     conn = get_db()
     cur = conn.cursor()
     cur.execute("SELECT * FROM images WHERE id = ? AND user_id = ?", (image_id, user_id))
